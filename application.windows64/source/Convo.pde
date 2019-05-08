@@ -124,7 +124,6 @@ class HelpScreen {
     box.text(text,0);
   }
 }
-
 static class C {
   static final C ZERO=new C(0,0);
   static final C LEFT=new C(-1,0);

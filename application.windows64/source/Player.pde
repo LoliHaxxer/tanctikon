@@ -2,7 +2,7 @@ class Player {
   int controlType, id, rgb;
   int typeAI;
   boolean thonking;
-  int doneFor;
+  //int doneFor;
   Player(int id, int controlType) {
     this.id=id;
     this.controlType=controlType;
@@ -23,7 +23,8 @@ class Player {
     unit.move(move);
   }
   synchronized void thonk(){
-    if(doneFor==idMove||thonking)return;
+    if(//doneFor==idMove||
+    thonking)return;
     thonking=true;
     Thread thonker = new Thread(new Runnable(){
       public void run(){
@@ -221,7 +222,7 @@ class Player {
           }
         }
         sleep(delayAIMove);
-        doneFor=idMove;
+        //doneFor=idMove;
         turn();
         thonking=false;
       }

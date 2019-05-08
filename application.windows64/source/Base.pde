@@ -13,6 +13,7 @@ Field copy(Field org){
   return r;
 }
 
+
 Player player(int pid) {
   try{
   return players.get(pid);
@@ -20,15 +21,16 @@ Player player(int pid) {
   catch(Exception e){e.printStackTrace();throw new RuntimeException();}
 }
 Set<Integer>pColors=new HashSet();
-void addPlayer(int controlType){
+synchronized void addPlayer(int controlType){
   int pid=cPlayer++;
   Player player=new Player(pid, controlType);
   if(pid>=players.size()) players.add(player);
   else players.set(pid,player);
   implementPlayer(field, player);
+  idMove=0;
   replay.clear();
 }
-void remPlayer(){
+synchronized void remPlayer(){
   if(cPlayer==0)return;
   int pid=--cPlayer;
   for(Field.Tile tile:field.tiles()){
@@ -36,6 +38,7 @@ void remPlayer(){
   }
   player(pid).del();
   turn();
+  idMove=0;
   replay.clear();
 }
 static boolean implementPlayer(Field field, Player player) {

@@ -10,7 +10,7 @@ class Replay{
   Replay(Field field){
     start=field;
   }
-  void register(Move move){
+  synchronized void register(Move move){
     if(at==moves.size()-1)moves.add(move);
     else moves.set(at+1,move);
     at+=1;
@@ -24,7 +24,7 @@ class Replay{
     }
     return true;
   }
-  void clear(){
+  synchronized void clear(){
     at = -1;
     moves.clear();
   }

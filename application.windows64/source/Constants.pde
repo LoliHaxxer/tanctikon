@@ -1,6 +1,6 @@
 volatile boolean lock;
 
-volatile long delayAIMove = 500;
+volatile long delayAIMove = 128;
 
 final Set<Integer> keyCodeDownies=new HashSet();
 
@@ -205,7 +205,7 @@ static{
 }
 
 
-static final int shiftActionAddPlayer = 0, shiftActionAddAI = 1, shiftActionRemPlayer = 2, shiftActionPauseMenu = 3, shiftActionDebug = 4, shiftActionReverse = 5, shiftActionForward = 6, shiftActionPauseAI = 7, cShiftAction = 8;
+static final int shiftActionAddPlayer = 0, shiftActionAddAI = 1, shiftActionRemPlayer = 2, shiftActionPauseMenu = 3, shiftActionDebug = 4, shiftActionReverse = 5, shiftActionForward = 6, shiftActionPauseAI = 7, shiftActionSpeedUpAI = 8, shiftActionSlowDownAI = 9, cShiftAction = 10;
 static final Set<Integer>[]shiftActions=new Set[cShiftAction];
 static{
   for(int i=0;i<cShiftAction;++i)shiftActions[i]=new HashSet<Integer>();
@@ -217,6 +217,8 @@ static{
   shiftActions[shiftActionReverse].add(37); //<-
   shiftActions[shiftActionForward].add(39); //->
   shiftActions[shiftActionPauseAI].add(90); //z
+  shiftActions[shiftActionSpeedUpAI].add(61); //=
+  shiftActions[shiftActionSlowDownAI].add(45); //-
 }
 static final Set<Character>[]cityKeyShortcuts=new Set[cUnit];
 static{

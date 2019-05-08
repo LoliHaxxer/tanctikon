@@ -3,7 +3,7 @@ import java.util.*;
 float zoom = 1F, spdZoom=0.1F;
 C camLoc=new C();
 int screen;
-int game=0, game_over=1, pause_menu=2, help=3;
+int game=0, game_over=1, pause_menu=2, help=3, shortcut_help=4;
 
 int cPlayer;
 List<Player> players;
@@ -27,7 +27,7 @@ float visUnitAllianceSize;
 boolean debug;
 boolean pauseAI;
 void setup() {
-  frameRate(24);
+  frameRate(60);
   size(1400, 787);
 
   screen=game;
@@ -55,137 +55,167 @@ void setup() {
 
 void draw() {
   synchronized (this){
-  while(lock);
-  lock=true;
-  {
-  Player p;
-  if(!pauseAI&&(p=player(moving)).controlType==controlTypeAI) p.thonk();
-  }
-  fill(0xffffff);
-  noStroke();
-  rect(0, 0, width, height);
-  float shota=width<height?width:height;
-  float visScaTileSize=visTileSize*zoom;
-  float visScaCitySize=visCitySize*zoom;
-  float visScaUnitDesignationSize=visUnitDesignationSize*zoom;
-  float visScaUnitAllianceSize=visUnitAllianceSize*zoom;
-  for (Field.Tile[]tiles : field.tiles) {
-    for (Field.Tile tile : tiles) {
-      if(!onScreen(tile.loc,new C(visScaTileSize,visScaTileSize))){continue;}
-      fill(tileRgb[tile.type]);
-      stroke(0);
-      strokeWeight(1);
-      float ltx=camLoc.x+tile.loc.x*visScaTileSize, lty=camLoc.y+tile.loc.y*visScaTileSize; 
-      rect(ltx, lty, visScaTileSize, visScaTileSize);
-      textSize(visScaTileSize/5);
-      fill(0);
-      if(debug)text(tile.loc.simple(), ltx, lty+visScaTileSize);
-      if (tile.city!=null) {
-        float dif=(visScaTileSize-visScaCitySize)/2;
-        fill(tile.city.rgb());
-        rect(ltx+dif, lty+dif, visScaCitySize, visScaCitySize);
-      } else if (tile.unit!=null) {
-        float cx=ltx+visScaTileSize/2, cy=lty+visScaTileSize/2;
-        fill((int)unitDisplay[tile.unit.type][0]);
-        ellipse(cx, cy, visScaUnitDesignationSize, visScaUnitDesignationSize);
-        fill(player(tile.unit.pid).rgb);
-        ellipse(cx, cy, visScaUnitAllianceSize, visScaUnitAllianceSize);
-        float segHp=visScaTileSize/50f;
-        float linesHp=unitMaxMaxHp;
-        float rectSizeHp=(visScaTileSize-segHp*(linesHp+1))/linesHp;
+    //while(lock);
+    //lock=true;
+    {
+    Player p;
+    if(!pauseAI&&(p=player(moving)).controlType==controlTypeAI) p.thonk();
+    }
+    fill(0xffffff);
+    noStroke();
+    rect(0, 0, width, height);
+    float shota=width<height?width:height;
+    float visScaTileSize=visTileSize*zoom;
+    float visScaCitySize=visCitySize*zoom;
+    float visScaUnitDesignationSize=visUnitDesignationSize*zoom;
+    float visScaUnitAllianceSize=visUnitAllianceSize*zoom;
+    for (Field.Tile[]tiles : field.tiles) {
+      for (Field.Tile tile : tiles) {
+        if(!onScreen(tile.loc,new C(visScaTileSize,visScaTileSize))){continue;}
+        fill(tileRgb[tile.type]);
         stroke(0);
-        for(int i=0;i<tile.unit.hp.h&&i<unitMaxMaxHp;++i){
-          if(i<tile.unit.hp.c)fill(bpS.hp.rgb[lToC],i,ltx,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
-          else fill(bpS.hp.rgb[cToH],i,ltx,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
-        }
-        for(int i=0;i<tile.unit.spd.h;++i){
-          if(i<tile.unit.spd.c)fill(bpS.spd.rgb[lToC],i,ltx+visScaTileSize-rectSizeHp,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
-          else fill(bpS.spd.rgb[cToH],i,ltx+visScaTileSize-rectSizeHp,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
+        strokeWeight(1);
+        float ltx=camLoc.x+tile.loc.x*visScaTileSize, lty=camLoc.y+tile.loc.y*visScaTileSize; 
+        rect(ltx, lty, visScaTileSize, visScaTileSize);
+        textSize(visScaTileSize/5);
+        fill(0);
+        if(debug)text(tile.loc.simple(), ltx, lty+visScaTileSize);
+        if (tile.city!=null) {
+          float dif=(visScaTileSize-visScaCitySize)/2;
+          fill(tile.city.rgb());
+          rect(ltx+dif, lty+dif, visScaCitySize, visScaCitySize);
+        } else if (tile.unit!=null) {
+          float cx=ltx+visScaTileSize/2, cy=lty+visScaTileSize/2;
+          fill((int)unitDisplay[tile.unit.type][0]);
+          ellipse(cx, cy, visScaUnitDesignationSize, visScaUnitDesignationSize);
+          fill(player(tile.unit.pid).rgb);
+          ellipse(cx, cy, visScaUnitAllianceSize, visScaUnitAllianceSize);
+          float segHp=visScaTileSize/50f;
+          float linesHp=unitMaxMaxHp;
+          float rectSizeHp=(visScaTileSize-segHp*(linesHp+1))/linesHp;
+          stroke(0);
+          for(int i=0;i<tile.unit.hp.h&&i<unitMaxMaxHp;++i){
+            if(i<tile.unit.hp.c)fill(bpS.hp.rgb[lToC],i,ltx,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
+            else fill(bpS.hp.rgb[cToH],i,ltx,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
+          }
+          for(int i=0;i<tile.unit.spd.h;++i){
+            if(i<tile.unit.spd.c)fill(bpS.spd.rgb[lToC],i,ltx+visScaTileSize-rectSizeHp,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
+            else fill(bpS.spd.rgb[cToH],i,ltx+visScaTileSize-rectSizeHp,lty,rectSizeHp,visScaTileSize,segHp,rectSizeHp);
+          }
         }
       }
     }
-  }
-  if (selected!=null) {
-    Object sel=selected.get(0);
-    Located loca=(Located)sel;
-    float ltx=camLoc.x+loca.loc().x*visScaTileSize, lty=camLoc.y+loca.loc().y*visScaTileSize;
-    C lt=new C(0.75*width, 0);
-    C ar=new C(0.25*width, height);
-    fill(infoTabRgb);
-    rect(lt.x, lt.y, ar.x, ar.y);
-    float segregation=height/50f;
-    int lines=20;
-    float ts=(height-segregation*(lines+1))/lines;
-    textSize(ts);
-    if (sel instanceof Field.City) {
-      Field.City city=(Field.City)sel;
-      fill(0);
-      text("City", 0, lt, ar, segregation, ts);
-      fill(city.rgb(), 1, lt, ar, segregation, ts);
-      fill(0);
-      text("Owner", 1, lt, ar, segregation, ts);
-      text(city.stats(), 2, lt, ar, segregation, ts);
-    } else if (sel instanceof Field.Unit) {
-      Field.Unit unit=(Field.Unit)sel;
-      fill(0);
-      text(unitName[unit.type], 0, lt, ar, segregation, ts);
-      fill(unit.rgb(), 1, lt, ar, segregation, ts);
-      fill(0);
-      text("Owner", 1, lt, ar, segregation, ts);
-      text(unit.stats(), 2, lt, ar, segregation, ts);
-    } else if (sel instanceof Field.Tile) {
-      Field.Tile tile=(Field.Tile)sel;
-      fill(0);
-      text(tileName[tile.type], 0, lt, ar, segregation, ts);
-      text("Movement cost: "+tileMovementCost[tile.type], 1, lt, ar, segregation, ts);
+    if (selected!=null) {
+      Object sel=selected.get(0);
+      Located loca=(Located)sel;
+      float ltx=camLoc.x+loca.loc().x*visScaTileSize, lty=camLoc.y+loca.loc().y*visScaTileSize;
+      C lt=new C(0.75*width, 0);
+      C ar=new C(0.25*width, height);
+      fill(infoTabRgb);
+      rect(lt.x, lt.y, ar.x, ar.y);
+      float segregation=height/50f;
+      int lines=20;
+      float ts=(height-segregation*(lines+1))/lines;
+      textSize(ts);
+      if (sel instanceof Field.City) {
+        Field.City city=(Field.City)sel;
+        fill(0);
+        text("City", 0, lt, ar, segregation, ts);
+        fill(city.rgb(), 1, lt, ar, segregation, ts);
+        fill(0);
+        text("Owner", 1, lt, ar, segregation, ts);
+        text(city.stats(), 2, lt, ar, segregation, ts);
+      } else if (sel instanceof Field.Unit) {
+        Field.Unit unit=(Field.Unit)sel;
+        if(!unit.wiped){
+          fill(0);
+          text(unitName[unit.type], 0, lt, ar, segregation, ts);
+          fill(unit.rgb(), 1, lt, ar, segregation, ts);
+          fill(0);
+          text("Owner", 1, lt, ar, segregation, ts);
+          text(unit.stats(), 2, lt, ar, segregation, ts);
+        }else{
+          unselect();
+        }
+      } else if (sel instanceof Field.Tile) {
+        Field.Tile tile=(Field.Tile)sel;
+        fill(0);
+        text(tileName[tile.type], 0, lt, ar, segregation, ts);
+        text("Movement cost: "+tileMovementCost[tile.type], 1, lt, ar, segregation, ts);
+      }
+      noFill();
+      stroke(players.get(moving).rgb);
+      strokeWeight(visScaTileSize/16);
+      rect(ltx, lty, visScaTileSize, visScaTileSize);
     }
-    noFill();
-    stroke(players.get(moving).rgb);
-    strokeWeight(visScaTileSize/16);
-    rect(ltx, lty, visScaTileSize, visScaTileSize);
-  }
-  if(cPlayer>0){
-    float s=shota/13;
-    noStroke();
-    fill(players.get(moving).rgb);
-    rect(0, 0, s, s);
-    if(player(moving).controlType==controlTypeAI){
+    if(cPlayer>0){
+      float s=shota/13;
+      noStroke();
+      fill(players.get(moving).rgb);
+      rect(0, 0, s, s);
       fill(0x0);
       textSize(s/2);
-      text("AI",0,s);
-      if(player(moving).thonking){
-        text("thonking...",s,s);
+      text(idMove,0,s/2);
+      if(player(moving).controlType==controlTypeAI){
+        fill(0x0);
+        textSize(s/2);
+        text("AI",0,s);
+        if(player(moving).thonking){
+          text("delay(ms):"+delayAIMove,s,s/2);
+          text("thonking...",s,s);
+        }
       }
     }
-  }
-  if(screen==pause_menu){
-    Box box = new Box(C.ZERO, new C(width,height), 2, height/4f);
-    box.colorText=0;
-    box.colorBack=infoTabRgb;
-    box.text("Q: Information",0);
-    box.text("P: Continue",1);
-  }else if(screen==help){
-    helpScreen.draw();
-  }
-  if(debug){
-    fill(0);
-    textSize(height/50);
-    text("debug",0,height);
-    for(int i=0;i<cDebugButtons;i+=1){
-      C lt = debugButtons[i][0].sca(height), ar = debugButtons[i][1].sca(height);
-      stroke(0);
-      strokeWeight(1);
-      fill(debugButtonColor(i));
-      rect(lt.x,lt.y,ar.x,ar.y);
-      String text = debugButtonText[i];
-      textSize(100);
-      textSize(ar.x/textWidth(text)*100);
-      fill(0);
-      text(text,lt.x,lt.y+ar.y);
+    if(screen==pause_menu){
+      Box box = new Box(C.ZERO, new C(width,height), 3, height/6f);
+      box.colorText=0;
+      box.colorBack=infoTabRgb;
+      box.text("Q: Information",0);
+      box.text("W: Shortcuts", 1);
+      box.text("P: Continue",2);
+    }else if(screen==help){
+      helpScreen.draw();
+    }else if(screen==shortcut_help){
+      C screen=new C(width,height);
+      filla((infoTabRgb<<8)+120);
+      rect(0,0,width,height);
+      Box box = new Box(screen.sca(.2), screen.sca(.6), 11, height/40f);
+      box.colorText=0;
+      box.colorBack=-1;
+      box.text("Shift+P: Pause Menu",0);
+      box.text("Tab: Select next idle unit",1);
+      box.text("Shift+Tab: Select next idle city",2);
+      box.text("Spacebar: End move",3);
+      box.text("Shift+A: Add player",4);
+      box.text("Shift+S: Add AI player",5);
+      box.text("Shift+R: Remove last added player",6);
+      box.text("Shift+Z: Pause AI",7);
+      box.text("Shift+=: Speed Up AI",8);
+      box.text("Shift+-: Slow Down AI",9);
+      box.text("Q: Quit a menu",10);
     }
+    if(debug){
+      fill(0);
+      textSize(height/50);
+      text("debug",0,height);
+      for(int i=0;i<cDebugButtons;i+=1){
+        C lt = debugButtons[i][0].sca(height), ar = debugButtons[i][1].sca(height);
+        stroke(0);
+        strokeWeight(1);
+        fill(debugButtonColor(i));
+        rect(lt.x,lt.y,ar.x,ar.y);
+        String text = debugButtonText[i];
+        textSize(100);
+        textSize(ar.x/textWidth(text)*100);
+        fill(0);
+        text(text,lt.x,lt.y+ar.y);
+      }
+    }else{
+      textSize(height/40f);
+      text("Shift+P",0,height);
+    }
+    //lock=false;
   }
-  }
-  lock=false;
 }
 
 void mouseClicked() {
@@ -258,6 +288,12 @@ void keyPressed() {
         case shiftActionPauseAI:
           pauseAI=!pauseAI;
           break;
+        case shiftActionSpeedUpAI:
+          delayAIMove/=2;
+          break;
+        case shiftActionSlowDownAI:
+          delayAIMove*=2;
+          break;
       }
     }else if (selected!=null) {
       Object sel=selected.get(0);
@@ -305,6 +341,9 @@ void keyPressed() {
       case 80:
         screen = game;
         break;
+      case 87:
+        screen = shortcut_help;
+        break;
     }
   }else if(screen==help){
     switch(keyCode){
@@ -319,6 +358,11 @@ void keyPressed() {
       case 38:
         helpScreen.browse(-1);
         break;
+    }
+  }else if (screen==shortcut_help){
+    switch(keyCode){
+      case 81:
+        screen=pause_menu;
     }
   }
 }
@@ -484,6 +528,7 @@ class Field {
       if (unit!=null&&unit.pid==moving)unit.turn();
     }
     void cleanse(int pid){
+      synchronized(Tanctikon.this){
       if(city!=null&&city.pid==pid){
         city.clear();
         city.pid=-1;
@@ -491,6 +536,7 @@ class Field {
       if(unit!=null&&unit.pid==pid){
         unit.wiped();
         unit=null;
+      }
       }
     }
     void revive(Unit me){
@@ -504,8 +550,8 @@ class Field {
       }
     }
     void kill(Unit me){
-      while(lock);
-      lock=true;
+      //while(lock);
+      //lock=true;
       if(city!=null){
         me.internater=city;
         city.remove(me);
@@ -515,11 +561,11 @@ class Field {
         me.internater=unit;
         unit.remove(me);
       }
-      lock=false;
+      //lock=false;
     }
     void move(Unit me, C target) {
-      while(lock);
-      lock=true;
+      //while(lock);
+      //lock=true;
       if (city!=null) {
         city.remove(me);
       }
@@ -540,14 +586,13 @@ class Field {
         tar.unit=me;
       }
       me.sLoc(target);
-      lock=false;
+      //lock=false;
     }
     void reve(Unit me, C origin){
       while(lock);
       lock=true;
       if (city!=null) {
         city.remove(me);
-        
       }
       if (me==unit) {
         unit=null;
@@ -654,7 +699,9 @@ class Field {
             visited.add(tile);
             int movesUsedAfter = movesUsed+tileMovementCost[tile.type], moveType;
             if (movesUsedAfter<=maxMoves&&((moveType=tile.moveType(this))!=moveTypeIllegal&&moveType!=moveTypeAttack)) {
-              r.add(new Move(moveType, movesUsedAfter, this.loc, next));
+              Move move = new Move(moveType, movesUsedAfter, this.loc, next);
+              if(moveType==moveTypeCaptureCity)move.bCityPid=tile.city.pid;
+              r.add(move);
               nexts.put(next,movesUsedAfter);
             }
           }
@@ -690,6 +737,7 @@ class Field {
     void remove(Unit u){if(transporting!=null)transporting.remove(u);}
     void move(Move move){move(move,true);}
     void move(Move move,boolean register) {
+      synchronized(Tanctikon.this){
       if(wiped)return;
       switch(move.type) {
       case moveTypeMovement:
@@ -713,13 +761,15 @@ class Field {
         }
       }
       if(register)replay.register(move);
+      }
     }
     void reve(Move move){
       switch(move.type) {
+      case moveTypeCaptureCity:
+        tile(loc).city.pid=move.bCityPid;
       case moveTypeMovement:
       case moveTypeEmbark:
       case moveTypeIncitiate:
-      case moveTypeCaptureCity:
         {
           Tile mine=tile(loc);
           mine.reve(this, move.origin);
@@ -778,7 +828,7 @@ class Field {
       return pid;
     }
     class Move implements Tanctikon.Move{
-      int type, drain;
+      int type, drain, bCityPid;
       C origin,target;
       Unit targett;
       Move(int type, int drain, C origin, C target) {
